@@ -1,0 +1,21 @@
+name: Project Manager
+version: 0.3.3
+author: Tom McKernan <tmeaglei@gmail.com>
+about: Auto updater to updater different package managers
+subcommands:
+  - add:
+      about: adds a new package manager to the list of managed package managers
+      args:
+        - NAME:
+            required: true
+            help: The name of the new manager
+  - upgrade:
+      about: runs the specified update commands if the time is up
+      args:
+        - NAME:
+            required: false
+        - force:
+            short: f
+            long: force
+            help: force the update ignoring the time
+            takes_value: false
