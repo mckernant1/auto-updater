@@ -35,13 +35,23 @@ fn get_settings_file() -> File {
 }
 
 fn add(name: String) {
-
+    // Get the commands to run when called
+    println!("Enter the commands for {}", name);
+    println!("Press enter when done.");
     let mut command = String::new();
-
-    while command != "\n" {
-        print!("Input the path of where you clone your repos (default is $HOME/Desktop): ");
+    let mut commands: Vec<String> = vec![];
+    loop {
+        print!("Enter the command you wish to add: ");
+        command = String::new();
         stdout().flush().unwrap();
         stdin().read_line(&mut command).unwrap();
-        dbg!(command.clone());
+        if command == "\n" {
+            break;
+        }
+        command = command.replace("\n", "");
+        commands.push(command.clone());
     };
+    dbg!(commands);
+    // Get how often to run the command
+    
 }
