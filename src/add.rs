@@ -1,14 +1,20 @@
 use std::io::{stdin, stdout, Write, Read};
-use crate::settings::get_settings_file;
+use crate::settings::{get_settings_file, get_settings_json};
+use std::time::SystemTime;
+use chrono::Utc;
 
 
 pub fn add(name: String) {
     let how_often = get_how_often();
     let commands = get_commands();
-    let mut settings_file = get_settings_file();
+    let timestamp = Utc::now();
+    let mut settings_json = get_settings_json();
 
-    let mut settings_json = String::new();
-    settings_file.read_to_string(&mut settings_json).unwrap();
+    settings_json[name] = object! {
+        "frequency" => how_often,
+        "lastUpdated" => timestamp.timestamp(),
+        "commands" => commands
+    }
 }
 
 
