@@ -8,10 +8,8 @@ mod update;
 mod settings;
 
 use clap::{App, AppSettings};
-use std::env;
-use std::fs::File;
-use std::io::{stdout, stdin, Write};
-use crate::add::{add};
+use crate::add::add;
+use crate::update::upgrade;
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
@@ -24,6 +22,15 @@ fn main() {
             .subcommand_matches("add").unwrap()
             .value_of("NAME").unwrap()
             .to_string()
+        )
+    } else if matches.is_present("upgrade") {
+        upgrade(matches
+                    .subcommand_matches("upgrade").unwrap()
+                    .value_of("NAME").unwrap_or("")
+                    .to_string(),
+                matches
+                    .subcommand_matches("upgrade").unwrap()
+                    .is_present("force"),
         )
     }
 }

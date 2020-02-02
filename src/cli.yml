@@ -10,10 +10,11 @@ subcommands:
             required: true
             help: The name of the new manager
   - upgrade:
-      about: runs the specified update commands if the time is up
+      about: runs the specified update commands if the time is up. Runs all if no name is specified.
       args:
         - NAME:
             required: false
+            help: The name of the command set to run.
         - force:
             short: f
             long: force
