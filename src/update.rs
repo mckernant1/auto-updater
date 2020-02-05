@@ -35,7 +35,7 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
         'w' => Duration::weeks(digit),
         'm' => Duration::weeks(digit * 4),
         'y' => Duration::weeks(digit * 52),
-        _ => panic!("Incorrect Format")
+        e => panic!("Invalid Character: '{}' format should be <INT><d, w, m, y>", e)
     };
     if force {
         run_commands(value, name);
