@@ -26,7 +26,7 @@ fn get_how_often() -> String {
     if how_often_string == "\n" {
         how_often_string = String::from("1w");
     }
-    return how_often_string;
+    return how_often_string.replace("\n", "");
 }
 
 fn get_commands(name: String) -> Vec<String> {

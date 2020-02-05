@@ -21,8 +21,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "auto_updater"
-version = "0.1.0"
+name = "auto-updater"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "clap",
