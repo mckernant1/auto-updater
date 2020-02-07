@@ -38,16 +38,19 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
         e => panic!("Invalid Character: '{}' format should be <INT><d, w, m, y>", e)
     };
     if force {
-        run_commands(value, name);
-        value["lastUpdated"] = today_timestamp.clone();
+        if run_commands(value, name) {
+            value["lastUpdated"] = today_timestamp.clone();
+        }
     } else if time + duration < DateTime::from(Utc::now()) {
-        run_commands(value, name);
-        value["lastUpdated"] = today_timestamp.clone();
+        if run_commands(value, name) {
+            value["lastUpdated"] = today_timestamp.clone();
+        }
     }
 }
 
-fn run_commands(value: &JsonValue, name: &str) {
+fn run_commands(value: &JsonValue, name: &str) -> bool {
     println!("Now running {}", name);
+    let mut worked = true;
     value["commands"].members().for_each(|item| {
         let cmd_vec: Vec<&str> = item.as_str().unwrap()
             .split_whitespace().collect();
@@ -58,9 +61,11 @@ fn run_commands(value: &JsonValue, name: &str) {
                 child.wait().unwrap();
             }
             Err(_) => {
+                worked = false;
                 eprintln!("This command does not exist.")
             }
         }
-    })
+    });
+    return worked;
 }
 
