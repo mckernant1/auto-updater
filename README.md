@@ -1,6 +1,10 @@
 # Auto Updater
 Add to your bashrc or zshrc to automatically check for updates on your set package managers
 
+```bash
+auto-updater upgrade
+```
+
 ## Install
 ```bash
 brew tap mckernant1/tools
@@ -18,6 +22,11 @@ auto-updater add <NAME>
 auto-updater add brew
 ```
 
+## Upgrade
+To upgrade a specific manager or ignore the timestamps
+```bash
+auto-updater upgrade [-f] [NAME]
+```
 
 
 ### Json structure
