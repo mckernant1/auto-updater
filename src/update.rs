@@ -49,7 +49,10 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
 }
 
 fn run_commands(value: &JsonValue, name: &str) -> bool {
-    println!("Now running {}", name);
+    println!("Now updating {} with commands {:?}", name,
+             value["commands"].members()
+                 .map(| c| c.as_str().unwrap())
+                 .collect::<Vec<&str>>());
     let mut worked = true;
     value["commands"].members().for_each(|item| {
         let cmd_vec: Vec<&str> = item.as_str().unwrap()
