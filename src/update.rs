@@ -1,6 +1,6 @@
 use crate::settings::{get_settings_json, write_settings_json};
 
-use chrono::{Utc, DateTime, Duration};
+use chrono::{Utc, DateTime, Duration, FixedOffset};
 
 use std::process::Command;
 use json::JsonValue;
@@ -42,7 +42,7 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
         if run_commands(value, name) {
             value["lastUpdated"] = today_timestamp.clone();
         }
-    } else if time + duration < DateTime::from(Utc::now()) {
+    } else if time + duration < (DateTime::from(Utc::now()) as DateTime<FixedOffset>){
         print!("It's time to update {}, would you like to update now (y/N): ", name);
         stdout().flush().unwrap();
         let mut update_prompt = String::new();
