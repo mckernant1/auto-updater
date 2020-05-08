@@ -30,17 +30,34 @@ auto-updater upgrade [-f] [NAME]
 
 
 ### Json structure
+Here is my example JSON structure
 ```json5
 {
-  brew: {
-    howOften: "1d", // how often to automatically update
-    lastUpdated: "", // timestamp
-    commands: [
-        "brew update",
-        "brew upgrade",
-        "brew cask upgrade",
-        "brew cleanup"
-      ]
+  "brew": {
+    "frequency": "2d",
+    "lastUpdated": "2020-05-02T20:24:40.095050+00:00",
+    "commands": [
+      "brew update",
+      "brew upgrade",
+      "brew cask upgrade",
+      "brew cleanup"
+    ]
+  },
+  "rustup": {
+    "frequency": "1m",
+    "lastUpdated": "2020-05-03T23:43:07.023288+00:00",
+    "commands": [
+      "rustup update"
+    ]
+  },
+  "npm": {
+    "frequency": "1w",
+    "lastUpdated": "2020-04-27T17:02:15.277517+00:00",
+    "commands": [
+      "npm i -g npm",
+      "npm update -g"
+    ]
   }
 }
+
 ```
