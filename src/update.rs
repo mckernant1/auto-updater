@@ -5,6 +5,7 @@ use chrono::{Utc, DateTime, Duration, FixedOffset};
 use std::process::Command;
 use json::JsonValue;
 use std::io::{stdout, stdin, Write};
+use std::process;
 
 
 pub fn upgrade(name: String, force: bool) {
@@ -14,8 +15,12 @@ pub fn upgrade(name: String, force: bool) {
         entries.for_each(|(name, value)| {
             run_command(value, force, name);
         });
-    } else {
+    } else if settings_json.has_key(name.clone().as_str()) {
         run_command(&mut settings_json[name.clone()], force, name.as_str());
+    } else {
+        println!("You do not have an obejct with the name {}\n\
+        If you want to add one do \n\n\tauto-updater add {}\n", name.clone(), name.clone());
+        process::exit(0);
     }
     write_settings_json(json::stringify(settings_json));
 }
@@ -36,7 +41,10 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
         'w' => Duration::weeks(digit),
         'm' => Duration::weeks(digit * 4),
         'y' => Duration::weeks(digit * 52),
-        e => panic!("Invalid Character: '{}' format should be <INT><d, w, m, y>", e)
+        e => {
+            println!("Invalid Character: '{}' format should be <INT><d, w, m, y>", e);
+            process::exit(1);
+        }
     };
     if force {
         if run_commands(value, name) {

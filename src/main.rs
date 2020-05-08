@@ -6,10 +6,14 @@ extern crate json;
 mod add;
 mod update;
 mod settings;
+mod list;
+mod info;
 
 use clap::{App, AppSettings};
 use crate::add::add;
 use crate::update::upgrade;
+use crate::list::list;
+use crate::info::info;
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
@@ -32,5 +36,12 @@ fn main() {
                     .subcommand_matches("upgrade").unwrap()
                     .is_present("force"),
         )
+    } else if matches.is_present("list") {
+        list();
+    } else if matches.is_present("info") {
+        info(matches
+            .subcommand_matches("info").unwrap()
+            .value_of("NAME").unwrap()
+            .to_string());
     }
 }

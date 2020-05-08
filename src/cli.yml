@@ -1,5 +1,5 @@
 name: Auto Updater
-version: 0.1.5
+version: 0.1.6
 author: Tom McKernan <tmeaglei@gmail.com>
 about: Auto updater to updater different package managers
 subcommands:
@@ -9,6 +9,14 @@ subcommands:
         - NAME:
             required: true
             help: The name of the new manager
+  - list:
+      about: lists the available package managers to upgrade
+  - info:
+      about: gives time info on a specific package manager
+      args:
+        - NAME:
+            required: true
+            help: name of the manager
   - upgrade:
       about: runs the specified update commands if the time is up. Runs all if no name is specified.
       args:
