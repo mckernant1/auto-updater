@@ -10,7 +10,6 @@ echo 'auto-updater upgrade' >> .zshrc
 
 OR
 
-
 echo 'auto-updater upgrade' >> .bashrc
 ```
 
