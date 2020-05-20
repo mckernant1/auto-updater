@@ -5,6 +5,14 @@ Add to your bashrc or zshrc to automatically check for updates on your set packa
 auto-updater upgrade
 ```
 
+```bash
+echo 'auto-updater upgrade' >> .zshrc
+
+OR
+
+echo 'auto-updater upgrade' >> .bashrc
+```
+
 ## Install
 ```bash
 brew tap mckernant1/tools
