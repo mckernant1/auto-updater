@@ -1,11 +1,12 @@
 use crate::settings::{get_settings_json, write_settings_json};
 
-use chrono::{Utc, DateTime, Duration, FixedOffset};
+use chrono::{Utc, DateTime, FixedOffset};
 
 use std::process::Command;
 use json::JsonValue;
 use std::io::{stdout, stdin, Write};
 use std::process;
+use crate::utils::parse_json;
 
 
 pub fn upgrade(name: String, force: bool) {
@@ -27,54 +28,38 @@ pub fn upgrade(name: String, force: bool) {
 
 
 fn run_command(value: &mut JsonValue, force: bool, name: &str) {
-    let time = DateTime::parse_from_rfc3339(value["lastUpdated"].as_str().unwrap()).unwrap();
+    let (last_updated,
+        _,
+        next_update,
+        commands) = parse_json(value);
     let today_timestamp = JsonValue::from(Utc::now().to_rfc3339());
-    let freq_str = value["frequency"].clone().to_string();
-    let frequency = freq_str.chars();
-    let time_char = frequency.clone().last().unwrap();
-    let digit = frequency.clone()
-        .take_while(|c| c.is_digit(10))
-        .collect::<String>()
-        .parse::<i64>().unwrap();
-    let duration = match time_char {
-        'd' => Duration::days(digit),
-        'w' => Duration::weeks(digit),
-        'm' => Duration::weeks(digit * 4),
-        'y' => Duration::weeks(digit * 52),
-        e => {
-            println!("Invalid Character: '{}' format should be <INT><d, w, m, y>", e);
-            process::exit(1);
-        }
-    };
     if force {
-        if run_commands(value, name) {
+        if run_commands(commands, name) {
             value["lastUpdated"] = today_timestamp.clone();
         }
-    } else if time + duration < (DateTime::from(Utc::now()) as DateTime<FixedOffset>){
+    } else if next_update < (DateTime::from(Utc::now()) as DateTime<FixedOffset>) {
         print!("It's time to update {}, would you like to update now (y/N): ", name);
         stdout().flush().unwrap();
         let mut update_prompt = String::new();
         stdin().read_line(&mut update_prompt).unwrap();
         if update_prompt.to_lowercase().starts_with("y") {
-            if run_commands(value, name) {
+            if run_commands(commands, name) {
                 value["lastUpdated"] = today_timestamp.clone();
+            } else {
+                println!("Something went wrong. Good luck!")
             }
         } else {
             println!("You will be prompted to update again on your next shell start");
-            println!("{} was last updated {}", name, time.to_rfc2822())
+            println!("{} was last updated {}", name, last_updated)
         }
     }
 }
 
-fn run_commands(value: &JsonValue, name: &str) -> bool {
-    println!("Now updating {} with commands {:?}", name,
-             value["commands"].members()
-                 .map(| c| c.as_str().unwrap())
-                 .collect::<Vec<&str>>());
+fn run_commands(commands: Vec<&str>, name: &str) -> bool {
+    println!("Now updating {} with commands {:?}", name, commands);
     let mut worked = true;
-    value["commands"].members().for_each(|item| {
-        let cmd_vec: Vec<&str> = item.as_str().unwrap()
-            .split_whitespace().collect();
+    for item in commands {
+        let cmd_vec = item.split_whitespace().collect::<Vec<&str>>();
         match Command::new(cmd_vec[0])
             .args(&cmd_vec[1..])
             .spawn() {
@@ -86,7 +71,7 @@ fn run_commands(value: &JsonValue, name: &str) -> bool {
                 eprintln!("This command does not exist.")
             }
         }
-    });
+    }
     return worked;
 }
 

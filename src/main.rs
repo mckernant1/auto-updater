@@ -8,6 +8,7 @@ mod update;
 mod settings;
 mod list;
 mod info;
+mod utils;
 
 use clap::{App, AppSettings};
 use crate::add::add;
