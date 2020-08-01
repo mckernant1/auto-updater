@@ -1,5 +1,5 @@
 name: Auto Updater
-version: 0.1.7
+version: 0.1.8
 author: Tom McKernan <tmeaglei@gmail.com>
 about: Auto updater to updater different package managers
 subcommands:
