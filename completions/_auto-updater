@@ -1,0 +1,128 @@
+#compdef auto-updater
+
+autoload -U is-at-least
+
+_auto-updater() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_auto-updater_commands" \
+"*::: :->Auto Updater" \
+&& ret=0
+    case $state in
+    (Auto Updater)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:auto-updater-command-$line[1]:"
+        case $line[1] in
+            (add)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':NAME -- The name of the new manager:_files' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(info)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':NAME -- name of the manager:_files' \
+&& ret=0
+;;
+(upgrade)
+_arguments "${_arguments_options[@]}" \
+'-f[force the update ignoring the time]' \
+'--force[force the update ignoring the time]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::NAME -- The name of the command set to run.:_files' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_auto-updater_commands] )) ||
+_auto-updater_commands() {
+    local commands; commands=(
+        "add:adds a new package manager to the list of managed package managers" \
+"list:lists the available package managers to upgrade" \
+"info:gives time info on a specific package manager" \
+"upgrade:runs the specified update commands if the time is up. Runs all if no name is specified." \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'auto-updater commands' commands "$@"
+}
+(( $+functions[_auto-updater__add_commands] )) ||
+_auto-updater__add_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'auto-updater add commands' commands "$@"
+}
+(( $+functions[_auto-updater__help_commands] )) ||
+_auto-updater__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'auto-updater help commands' commands "$@"
+}
+(( $+functions[_auto-updater__info_commands] )) ||
+_auto-updater__info_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'auto-updater info commands' commands "$@"
+}
+(( $+functions[_auto-updater__list_commands] )) ||
+_auto-updater__list_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'auto-updater list commands' commands "$@"
+}
+(( $+functions[_auto-updater__upgrade_commands] )) ||
+_auto-updater__upgrade_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'auto-updater upgrade commands' commands "$@"
+}
+
+_auto-updater "$@"
