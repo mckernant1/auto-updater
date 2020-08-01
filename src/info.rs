@@ -1,6 +1,7 @@
 use crate::settings::{get_settings_json};
 use std::process;
 use crate::utils::parse_json;
+use chrono::Local;
 
 
 pub fn info(name: String) {
@@ -17,8 +18,8 @@ Update every: {}\n\
 Next update: {},\n\
 Commands: {:?}",
              name.clone(),
-             last_updated,
+             last_updated.with_timezone(&Local),
              freq_str,
-             next_update,
+             next_update.with_timezone(&Local),
              commands);
 }
