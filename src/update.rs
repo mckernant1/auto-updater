@@ -38,7 +38,7 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
             value["lastUpdated"] = today_timestamp.clone();
         }
     } else if next_update < (DateTime::from(Utc::now()) as DateTime<FixedOffset>) {
-        print!("It's time to update {}, would you like to update now (y/N): ", name);
+        print!("It's time to update {}, would you like to update now (y/N/s): ", name);
         stdout().flush().unwrap();
         let mut update_prompt = String::new();
         stdin().read_line(&mut update_prompt).unwrap();
@@ -48,6 +48,8 @@ fn run_command(value: &mut JsonValue, force: bool, name: &str) {
             } else {
                 println!("Something went wrong. Good luck!")
             }
+        } else if update_prompt.to_lowercase().starts_with("s") {
+            value["lastUpdated"] = today_timestamp.clone();
         } else {
             println!("You will be prompted to update again on your next shell start");
             println!("{} was last updated {}", name, last_updated)

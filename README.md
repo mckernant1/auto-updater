@@ -35,7 +35,13 @@ To upgrade a specific manager or ignore the timestamps
 ```bash
 auto-updater upgrade [-f] [NAME]
 ```
-
+You then get prompted to update not update or skip.
+- Yes runs the commands and updates the last updated time
+- No does not run the commands and does not update the last updated time
+- Skip does not run the commands and updates the last updated time
+```
+It's time to update brew, would you like to update now (y/N/s): 
+```
 
 ### Json structure
 Here is my example JSON structure
