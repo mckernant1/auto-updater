@@ -1,6 +1,6 @@
 [package]
 name = "auto-updater"
-version = "0.1.8"
+version = "0.1.9"
 authors = ["Tom McKernan <tmeaglei@gmail.com>"]
 edition = "2018"
 
