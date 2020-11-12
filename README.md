@@ -15,7 +15,7 @@ echo 'auto-updater upgrade' >> .bashrc
 
 ## Install
 ```bash
-brew tap mckernant1/tools
+brew tap mckernant1/tap
 brew install auto-updater
 ```
 
