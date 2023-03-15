@@ -1,12 +1,12 @@
-use std::fs::File;
-use std::{env, fs};
-use std::io::Read;
 use json::JsonValue;
+use std::fs::File;
+use std::io::Read;
+use std::{env, fs};
+
+pub struct Setting {}
 
 pub fn get_settings_file() -> File {
-    let path = format!(
-        "{}/.auto_updater.json",
-        env::var("HOME").unwrap());
+    let path = format!("{}/.auto_updater.json", env::var("HOME").unwrap());
     let settings_file_res = File::open(path.clone());
 
     return match settings_file_res {
@@ -27,8 +27,6 @@ pub fn get_settings_json() -> JsonValue {
 }
 
 pub fn write_settings_json(contents: String) {
-    let path = format!(
-        "{}/.auto_updater.json",
-        env::var("HOME").unwrap());
+    let path = format!("{}/.auto_updater.json", env::var("HOME").unwrap());
     fs::write(path, contents).unwrap();
 }
