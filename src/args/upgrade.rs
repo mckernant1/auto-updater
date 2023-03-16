@@ -1,16 +1,13 @@
 use std::{
+    collections::HashMap,
     io::{stdin, stdout, Write},
     process::Command,
 };
 
-use chrono::{DateTime, FixedOffset, Utc};
+use chrono::Local;
 use clap::Args;
-use json::JsonValue;
 
-use crate::{
-    settings::{get_settings_json, write_settings_json},
-    utils::parse_json,
-};
+use crate::settings::{get_settings_json, write_settings_json, Setting};
 
 #[derive(Args, Debug, Clone)]
 pub struct Upgrade {
@@ -26,9 +23,10 @@ impl Upgrade {
     pub fn upgrade(&self) {
         let mut settings_json = get_settings_json();
         match self.name.clone() {
-            Some(name) if settings_json.has_key(name.clone().as_str()) => {
-                Self::run_command(&mut settings_json[name.clone()], self.force, name.as_str())
-            }
+            Some(name) if settings_json.contains_key(&name) => Self::run_command(
+                HashMap::from([(&name, settings_json.get_mut(&name).unwrap())]),
+                self.force,
+            ),
             Some(name) => {
                 println!(
                     "You do not have an obejct with the name {}\n
@@ -39,45 +37,62 @@ impl Upgrade {
                 return;
             }
             None => {
-                let entries = settings_json.entries_mut();
-                entries.for_each(|(name, value)| {
-                    Self::run_command(value, self.force, name);
-                });
+                let entries = settings_json.iter_mut();
+                let now = Local::now().naive_local();
+                let entries = entries
+                    .filter(|(_, value)| self.force || value.next_trigger() < now)
+                    .collect::<HashMap<&String, &mut Setting>>();
+                if !entries.is_empty() {
+                    Self::run_command(entries, self.force);
+                }
             }
         }
-        write_settings_json(json::stringify(settings_json));
+        write_settings_json(serde_json::to_string(&settings_json).unwrap());
     }
 
-    fn run_command(value: &mut JsonValue, force: bool, name: &str) {
-        let (last_updated, _, next_update, commands) = parse_json(value);
-        let today_timestamp = JsonValue::from(Utc::now().to_rfc3339());
+    fn run_command(settings: HashMap<&String, &mut Setting>, force: bool) {
+        let now = Local::now().naive_local();
         if force {
-            if Self::run_commands(commands, name) {
-                value["lastUpdated"] = today_timestamp.clone();
+            for (name, mut value) in settings {
+                if Self::run_commands(value.commands.clone(), name.as_str()) {
+                    value.last_updated = now.clone();
+                }
             }
-        } else if next_update < (DateTime::from(Utc::now()) as DateTime<FixedOffset>) {
+        } else {
             print!(
                 "It's time to update {}, would you like to update now (y/N/s): ",
-                name
+                settings
+                    .keys()
+                    .cloned()
+                    .cloned()
+                    .collect::<Vec<String>>()
+                    .join(", ")
             );
             stdout().flush().unwrap();
             let mut update_prompt = String::new();
             stdin().read_line(&mut update_prompt).unwrap();
             if update_prompt.to_lowercase().starts_with("y") {
-                if Self::run_commands(commands, name) {
-                    value["lastUpdated"] = today_timestamp.clone();
-                } else {
-                    println!("Something went wrong. Good luck!")
+                for (name, mut value) in settings {
+                    if Self::run_commands(value.commands.clone(), name.as_str()) {
+                        value.last_updated = now.clone();
+                    } else {
+                        println!("Something went wrong. Good luck!")
+                    }
                 }
             } else if update_prompt.to_lowercase().starts_with("s") {
-                value["lastUpdated"] = today_timestamp.clone();
+                for (_name, mut value) in settings {
+                    value.last_updated = now.clone();
+                }
             } else {
                 println!("You will be prompted to update again on your next shell start");
-                println!("{} was last updated {}", name, last_updated)
+                for (name, value) in settings {
+                    println!("{} was last updated {}", name, value.last_updated);
+                }
             }
         }
     }
-    fn run_commands(commands: Vec<&str>, name: &str) -> bool {
+
+    fn run_commands(commands: Vec<String>, name: &str) -> bool {
         println!("Now updating {} with commands {:?}", name, commands);
         let mut worked = true;
         for item in commands {

@@ -1,7 +1,6 @@
-use crate::settings::{get_settings_json, write_settings_json};
-use chrono::Utc;
+use crate::settings::{get_settings_json, write_settings_json, Setting};
+use chrono::Local;
 use clap::Args;
-use json::object;
 use std::io::{stdin, stdout, Write};
 
 #[derive(Args, Debug, Clone)]
@@ -14,15 +13,19 @@ impl Add {
     pub fn add(&self) {
         let how_often = self.get_how_often();
         let commands = self.get_commands(self.name.clone());
-        let timestamp = Utc::now();
+        let timestamp = Local::now().naive_local();
         let mut settings_json = get_settings_json();
 
-        settings_json[self.name.clone()] = object! {
-            "frequency" => how_often,
-            "lastUpdated" => timestamp.to_rfc3339(),
-            "commands" => commands
-        };
-        write_settings_json(json::stringify(settings_json));
+        settings_json.insert(
+            self.name.clone(),
+            Setting {
+                frequency: how_often,
+                last_updated: timestamp,
+                commands,
+            },
+        );
+
+        write_settings_json(serde_json::to_string(&settings_json).unwrap());
     }
 
     fn get_how_often(&self) -> String {

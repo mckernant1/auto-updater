@@ -1,9 +1,6 @@
-use std::process;
-
-use chrono::Local;
 use clap::Args;
 
-use crate::{settings::get_settings_json, utils::parse_json};
+use crate::settings::get_settings_json;
 #[derive(Args, Debug, Clone)]
 pub struct Info {
     /// name of the manager
@@ -14,12 +11,10 @@ impl Info {
     pub fn info(&self) {
         let name = self.name.clone();
         let json = get_settings_json();
-        if !json.has_key(name.clone().as_str()) {
-            println!("There is no package manager with this name");
-            process::exit(1);
+        if !json.contains_key(&name) {
+            panic!("There is no package manager with this name");
         }
-        let member = &json[name.clone()];
-        let (last_updated, freq_str, next_update, commands) = parse_json(member);
+        let setting = json.get(&name).unwrap();
         println!(
             "Name: {}\n\
 Last updated: {}\n\
@@ -27,10 +22,10 @@ Update every: {}\n\
 Next update: {},\n\
 Commands: {:?}",
             name.clone(),
-            last_updated.with_timezone(&Local),
-            freq_str,
-            next_update.with_timezone(&Local),
-            commands
+            setting.last_updated,
+            setting.frequency,
+            setting.next_trigger(),
+            setting.commands
         );
     }
 }

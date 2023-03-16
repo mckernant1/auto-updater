@@ -12,9 +12,6 @@ mod args;
 #[path = "src/settings.rs"]
 mod settings;
 
-#[path = "src/utils.rs"]
-mod utils;
-
 fn main() {
     let mut command = Cli::command();
     fs::create_dir_all("completions").unwrap();

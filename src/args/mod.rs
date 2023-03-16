@@ -20,8 +20,12 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum Commands {
+    /// Add a new manager
     Add(Add),
+    /// Get info about an existing manager
     Info(Info),
+    /// List all existing managers
     List(List),
+    /// Run an upgrade for a manager
     Upgrade(Upgrade),
 }
