@@ -1,14 +1,15 @@
 mod add;
 mod info;
 mod list;
+mod remove;
 mod upgrade;
-
-use clap::{Parser, Subcommand};
 
 use self::add::Add;
 use self::info::Info;
 use self::list::List;
 use self::upgrade::Upgrade;
+use crate::args::remove::Remove;
+use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -26,6 +27,8 @@ pub enum Commands {
     Info(Info),
     /// List all existing managers
     List(List),
-    /// Run an upgrade for a manager
+    /// Run an upgrade for a manager or all managers
     Upgrade(Upgrade),
+    /// Remove a manager
+    Remove(Remove),
 }

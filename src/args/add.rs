@@ -1,6 +1,7 @@
 use crate::settings::{get_settings_json, write_settings_json, Setting};
 use chrono::Local;
 use clap::Args;
+use color_eyre::Result;
 use std::io::{stdin, stdout, Write};
 
 #[derive(Args, Debug, Clone)]
@@ -10,11 +11,11 @@ pub struct Add {
 }
 
 impl Add {
-    pub fn add(&self) {
-        let how_often = self.get_how_often();
-        let commands = self.get_commands(self.name.clone());
+    pub fn add(&self) -> Result<()> {
+        let how_often = self.get_how_often()?;
+        let commands = self.get_commands(self.name.clone())?;
         let timestamp = Local::now().naive_local();
-        let mut settings_json = get_settings_json();
+        let mut settings_json = get_settings_json()?;
 
         settings_json.insert(
             self.name.clone(),
@@ -25,36 +26,37 @@ impl Add {
             },
         );
 
-        write_settings_json(serde_json::to_string(&settings_json).unwrap());
+        write_settings_json(settings_json)?;
+        Ok(())
     }
 
-    fn get_how_often(&self) -> String {
+    fn get_how_often(&self) -> Result<String> {
         print!("enter how often you want this to be run (1w): ");
-        stdout().flush().unwrap();
+        stdout().flush()?;
         let mut how_often_string = String::new();
         stdin().read_line(&mut how_often_string).unwrap();
         if how_often_string == "\n" {
             how_often_string = String::from("1w");
         }
-        return how_often_string.replace("\n", "");
+        Ok(how_often_string.replace("\n", ""))
     }
 
-    fn get_commands(&self, name: String) -> Vec<String> {
+    fn get_commands(&self, name: String) -> Result<Vec<String>> {
         println!("enter the commands for {}", name);
         println!("press enter when done.");
         let mut commands: Vec<String> = vec![];
 
         loop {
             print!("enter the command you wish to add: ");
-            stdout().flush().unwrap();
+            stdout().flush()?;
             let mut command = String::new();
-            stdin().read_line(&mut command).unwrap();
+            stdin().read_line(&mut command)?;
             if command == "\n" {
                 break;
             }
             command = command.replace("\n", "");
             commands.push(command.clone());
         }
-        return commands;
+        Ok(commands)
     }
 }

@@ -1,4 +1,5 @@
 use clap::Args;
+use color_eyre::Result;
 
 use crate::settings::get_settings_json;
 #[derive(Args, Debug, Clone)]
@@ -8,9 +9,9 @@ pub struct Info {
 }
 
 impl Info {
-    pub fn info(&self) {
+    pub fn info(&self) -> Result<()> {
         let name = self.name.clone();
-        let json = get_settings_json();
+        let json = get_settings_json()?;
         if !json.contains_key(&name) {
             panic!("There is no package manager with this name");
         }
@@ -24,8 +25,9 @@ Commands: {:?}",
             name.clone(),
             setting.last_updated,
             setting.frequency,
-            setting.next_trigger(),
+            setting.next_trigger()?,
             setting.commands
         );
+        Ok(())
     }
 }

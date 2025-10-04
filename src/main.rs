@@ -5,14 +5,17 @@ extern crate clap;
 mod args;
 pub mod settings;
 
+use args::Commands as C;
+
 fn main() -> Result<()> {
     color_eyre::install()?;
     let args = crate::args::Cli::parse();
     match args.command {
-        args::Commands::Add(a) => a.add(),
-        args::Commands::Info(i) => i.info(),
-        args::Commands::List(l) => l.list(),
-        args::Commands::Upgrade(u) => u.upgrade(),
-    };
+        C::Add(a) => a.add(),
+        C::Info(i) => i.info(),
+        C::List(l) => l.list(),
+        C::Upgrade(u) => u.upgrade(),
+        C::Remove(r) => r.remove(),
+    }?;
     Ok(())
 }
