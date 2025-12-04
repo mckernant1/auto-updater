@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         language:
-          - java
+          - rust
           - actions
 
     steps:
