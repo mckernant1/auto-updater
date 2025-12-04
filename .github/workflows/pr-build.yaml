@@ -1,0 +1,52 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      matrix:
+        language:
+          - java
+          - actions
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+      - name: Initialize CodeQL (Non-Actions)
+        uses: github/codeql-action/init@v4
+        if: matrix.language != 'actions'
+        with:
+          languages: ${{ matrix.language }}
+          dependency-caching: true
+          config-file: ./.github/codeql/codeql-config.yaml
+          packs: >
+            codeql/${{ matrix.language }}-queries,
+            githubsecuritylab/codeql-${{ matrix.language }}-queries
+          queries: security-and-quality
+      - name: Initialize CodeQL (Actions)
+        uses: github/codeql-action/init@v4
+        if: matrix.language == 'actions'
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yaml
+          dependency-caching: true
+      - name: Build
+        uses: github/codeql-action/autobuild@v4
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4

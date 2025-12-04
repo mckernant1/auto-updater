@@ -61,7 +61,7 @@ impl Upgrade {
         if force {
             for (name, value) in settings {
                 Self::run_commands(value.commands.clone(), name.as_str())?;
-                value.last_updated = now.clone();
+                value.last_updated = now;
             }
         } else {
             print!(
@@ -78,11 +78,11 @@ impl Upgrade {
             if update_prompt.to_lowercase().starts_with("y") {
                 for (name, value) in settings {
                     Self::run_commands(value.commands.clone(), name.as_str())?;
-                    value.last_updated = now.clone();
+                    value.last_updated = now;
                 }
             } else if update_prompt.to_lowercase().starts_with("s") {
                 for (_name, value) in settings {
-                    value.last_updated = now.clone();
+                    value.last_updated = now;
                 }
             } else {
                 println!("You will be prompted to update again on your next shell start");

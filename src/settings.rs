@@ -21,7 +21,7 @@ impl Setting {
         let time_char = frequency.clone().last().unwrap();
         let digit = frequency
             .clone()
-            .take_while(|c| c.is_digit(10))
+            .take_while(|c| c.is_ascii_digit())
             .collect::<String>()
             .parse::<i64>()?;
         let duration = match time_char {
