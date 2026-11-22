@@ -1,4 +1,5 @@
 use clap::Args;
+use color_eyre::eyre::eyre;
 use color_eyre::Result;
 
 use crate::settings::get_settings_json;
@@ -13,7 +14,7 @@ impl Info {
         let name = self.name.clone();
         let json = get_settings_json()?;
         if !json.contains_key(&name) {
-            panic!("There is no package manager with this name");
+            Err(eyre!("There is no package manager with this name"))?;
         }
         let setting = json.get(&name).unwrap();
         println!(
@@ -22,7 +23,7 @@ Last updated: {}\n\
 Update every: {}\n\
 Next update: {},\n\
 Commands: {:?}",
-            name.clone(),
+            name,
             setting.last_updated,
             setting.frequency,
             setting.next_trigger()?,

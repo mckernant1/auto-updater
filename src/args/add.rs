@@ -34,7 +34,7 @@ impl Add {
         print!("enter how often you want this to be run (1w): ");
         stdout().flush()?;
         let mut how_often_string = String::new();
-        stdin().read_line(&mut how_often_string).unwrap();
+        stdin().read_line(&mut how_often_string)?;
         if how_often_string == "\n" {
             how_often_string = String::from("1w");
         }

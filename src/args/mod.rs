@@ -3,11 +3,13 @@ mod info;
 mod list;
 mod remove;
 mod upgrade;
+mod path;
 
 use self::add::Add;
 use self::info::Info;
 use self::list::List;
 use self::upgrade::Upgrade;
+use self::path::Path;
 use crate::args::remove::Remove;
 use clap::{Parser, Subcommand};
 
@@ -31,4 +33,6 @@ pub enum Commands {
     Upgrade(Upgrade),
     /// Remove a manager
     Remove(Remove),
+    /// The path of the config file
+    Path(Path)
 }
